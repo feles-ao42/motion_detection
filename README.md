@@ -1,4 +1,6 @@
 # motion_detection
+ミニ実験用です。
+mediapipeを用いた、モーション検知ができます。
 
 ### install
 ```shell
