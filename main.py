@@ -82,11 +82,11 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-# 人差指のID
+# トラック対象の設定(https://developers.google.com/mediapipe/solutions/vision/hand_landmarker)参照
 ID_FINGER_TIP = 9
 ID_FINGER_TIP_2 = 12
 
-# 人差指の指先の座標履歴を保持するための変数
+# 指先の座標履歴を保持するための変数
 history_length = 16
 point_history = deque(maxlen=history_length)
 gesture_label = ['Stop', 'pa-', 'gu-']
@@ -117,7 +117,7 @@ while video_capture.isOpened():
 
             # ランドマーク座標の計算
             landmark_list = calc_landmark_list(rgb_image, hand_landmarks)
-            # 人差指の指先座標を履歴に追加
+            # 指先座標を履歴に追加
             point_history.append(landmark_list[ID_FINGER_TIP])
             point_history.append(landmark_list[ID_FINGER_TIP_2])
     else:
