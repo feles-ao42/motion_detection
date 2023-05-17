@@ -1,5 +1,2 @@
 .idea
-.ipynb_checkpoints
-.jupyter
-gesture_classifier.hdf5
-gesture_classifier.tflite
+.DS_Store

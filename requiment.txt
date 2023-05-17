@@ -1,0 +1,5 @@
+mediapipe
+tensorflow
+opencv-python
+scikit-learn
+notebook
