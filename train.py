@@ -61,7 +61,8 @@ hands = mp_hands.Hands(
 )
 
 # 人差指のID
-ID_FINGER_TIP = 8
+ID_FINGER_TIP = 9
+ID_FINGER_TIP_2 = 12
 
 # 人差指の指先の座標履歴を保持するための変数
 history_length = 16
@@ -99,6 +100,7 @@ while video_capture.isOpened():
             landmark_list = calc_landmark_list(rgb_image, hand_landmarks)
             # 人差指の指先座標を履歴に追加
             point_history.append(landmark_list[ID_FINGER_TIP])
+            point_history.append(landmark_list[ID_FINGER_TIP_2])
 
     if len(point_history) == history_length:
         point_history_list = list(itertools.chain.from_iterable(point_history))
