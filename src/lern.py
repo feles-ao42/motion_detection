@@ -6,7 +6,7 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
 
-dataset = './point_history.csv'
+dataset = './data/point_history.csv'
 model_save_path = './gesture_classifier.hdf5'
 
 

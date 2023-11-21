@@ -69,7 +69,7 @@ history_length = 16
 point_history = deque(maxlen=history_length)
 
 # CSVファイル保存先
-csv_path = './point_history.csv'
+csv_path = './data/point_history.csv'
 
 start_time = time.time()
 while video_capture.isOpened():
