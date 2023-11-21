@@ -4,13 +4,12 @@ mediapipeを用いた、モーション検知ができます。
 
 ### install
 ```shell
-cd docker
-docker compose up -d --build
-docker exec -it motion_env bash
+pip install -r ./env/requirements.txt
 ```
 
 ### mediapipe動作test
 ```shell
+cd src
 python3 test.py
 ```
 
