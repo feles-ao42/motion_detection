@@ -9,7 +9,9 @@ import mediapipe as mp
 # コマンドライン引数取得
 parser = argparse.ArgumentParser()
 parser.add_argument("--time", type=int, default=10)
+parser.add_argument("--gesture_id", type=int, default=0)
 args = parser.parse_args()
+
 
 # ランドマークの画像上の位置を算出する関数
 def calc_landmark_list(image, landmarks):
@@ -23,6 +25,7 @@ def calc_landmark_list(image, landmarks):
 
     return landmark_point
 
+
 # 座標履歴を描画する関数
 def draw_point_history(image, point_history):
     for index, point in enumerate(point_history):
@@ -30,12 +33,14 @@ def draw_point_history(image, point_history):
             cv2.circle(image, (point[0], point[1]), 1 + int(index / 2), (255, 0, 0), 2)
     return image
 
+
 # CSVファイルに座標履歴を保存する関数
-def logging_csv(csv_path, width, height, point_history_list):
+def logging_csv(gesture_id, csv_path, width, height, point_history_list):
     with open(csv_path, 'a', newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([width, height, *point_history_list])
+        writer.writerow([gesture_id, width, height, *point_history_list])
     return
+
 
 # カメラキャプチャ設定
 camera_no = 0
@@ -96,7 +101,7 @@ while video_capture.isOpened():
 
     if len(point_history) == history_length:
         point_history_list = [item for sublist in point_history for item in sublist]
-        logging_csv(csv_path, frame_width, frame_height, point_history_list)
+        logging_csv(args.gesture_id, csv_path, frame_width, frame_height, point_history_list)
 
     # ディスプレイ表示
     frame = draw_point_history(frame, point_history)
