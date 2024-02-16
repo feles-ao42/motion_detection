@@ -123,7 +123,7 @@ while video_capture.isOpened():
         gesture_id = np.argmax(np.squeeze(tflite_results))
 
         # ディスプレイ表示
-        cv2.putText(frame, gesture_label[gesture_id], (30, 30),
+        cv2.putText(frame, gesture_label[gesture_id], (300, 300),
                     cv2.FONT_HERSHEY_PLAIN, 10, (255, 255, 0), 1, cv2.LINE_AA)
         frame = draw_point_history(frame, point_history)
         cv2.imshow('full_body_detection', frame)
