@@ -84,7 +84,7 @@ gesture_label = ['SAKURA', 'CAT', 'TRAIN']
 while video_capture.isOpened():
     # カメラ画像取得
     ret, frame = video_capture.read()
-    img = np.zeros((100, 300, 3), dtype=np.uint8)
+    img = np.zeros((5000, 3000, 3), dtype=np.uint8)
 
     if ret is False:
         break
