@@ -89,6 +89,9 @@ gesture_label = ['0', '1', '2']
 
 # ジェスチャー番号表示用ウィンドウ
 cv2.namedWindow('gesture_number', cv2.WINDOW_NORMAL)
+# ジェスチャー番号表示用ウィンドウ背景色設定
+cv2.setWindowProperty('gesture_number', cv2.WND_PROP_BACKGROUND_COLOR, (0, 0, 0))
+
 
 while video_capture.isOpened():
     # カメラ画像取得
