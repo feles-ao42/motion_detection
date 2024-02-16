@@ -51,7 +51,7 @@ def pre_process_point_history(image, point_history):
 # ジェスチャー番号を描画する関数
 def draw_gesture_number(image, gesture_id):
     cv2.putText(image, str(gesture_id), (10, 30),
-                cv2.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1, cv2.LINE_AA)
+                cv2.FONT_HERSHEY_PLAIN, 10, (100, 100, 100), 1, cv2.LINE_AA)
     return image
 
 # カメラキャプチャ設定
@@ -87,8 +87,6 @@ output_details = interpreter.get_output_details()
 
 gesture_label = ['0', '1', '2']
 
-# ジェスチャー番号表示用ウィンドウ背景色設定
-cv2.imshow('gesture_number', frame[:, :, ::-1])
 # ジェスチャー番号表示用ウィンドウ
 cv2.namedWindow('gesture_number', cv2.WINDOW_NORMAL)
 
