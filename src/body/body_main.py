@@ -79,7 +79,7 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-gesture_label = ['0', '1', '2']
+gesture_label = ['さくら', 'ねこ', 'でんしゃ']
 
 while video_capture.isOpened():
     # カメラ画像取得
