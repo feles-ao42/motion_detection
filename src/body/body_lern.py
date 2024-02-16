@@ -6,7 +6,7 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
 
-dataset = './data/body_point_history.csv'
+dataset = './data/point_history.csv'
 model_save_path = './data/gesture_classifier.hdf5'
 
 
@@ -84,7 +84,7 @@ model.save(model_save_path, include_optimizer=False)
 
 
 model = tf.keras.models.load_model(model_save_path)
-tflite_save_path = './data/body_gesture_classifier.tflite'
+tflite_save_path = './data/gesture_classifier.tflite'
 
 # モデルを変換(量子化)
 converter = tf.lite.TFLiteConverter.from_keras_model(model)

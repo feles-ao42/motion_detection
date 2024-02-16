@@ -75,7 +75,7 @@ hands = mp_hands.Hands(
 )
 
 # ジェスチャー認識用モデルロード
-tflite_save_path = './data/hands_gesture_classifier.tflite'
+tflite_save_path = './data/gesture_classifier.tflite'
 interpreter = tf.lite.Interpreter(model_path=tflite_save_path)
 interpreter.allocate_tensors()
 
