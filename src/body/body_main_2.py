@@ -38,8 +38,8 @@ def pre_process_point_history(image, point_history):
         if index == 0:
             base_x, base_y = point[0], point[1]
 
-    temp_point_history[index][0] = (temp_point_history[index][0] - base_x) / image_width
-    temp_point_history[index][1] = (temp_point_history[index][1] - base_y) / image_height
+        temp_point_history[index][0] = (temp_point_history[index][0] - base_x) / image_width
+        temp_point_history[index][1] = (temp_point_history[index][1] - base_y) / image_height
 
     # 1次元リストに変換
     temp_point_history = list(itertools.chain.from_iterable(temp_point_history))
@@ -47,12 +47,6 @@ def pre_process_point_history(image, point_history):
     del temp_point_history[0:2]
 
     return temp_point_history
-
-# ジェスチャー番号を描画する関数
-def draw_gesture_number(image, gesture_id):
-    cv2.putText(image, str(gesture_id), (10, 30),
-                cv2.FONT_HERSHEY_PLAIN, 10, (100, 100, 100), 1, cv2.LINE_AA)
-    return image
 
 # カメラキャプチャ設定
 camera_no = 0
@@ -70,8 +64,8 @@ pose = mp_pose.Pose(
 )
 
 # トラック対象の設定 (肩と手)
-ID_SHOULDER = 11 # 右肩
-ID_HAND = 20 # 右手首
+ID_SHOULDER = 11  # 右肩
+ID_HAND = 20  # 右手首
 
 # 座標履歴を保持するための変数
 history_length = 16
@@ -85,15 +79,13 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-gesture_label = ['0', '1', '2']
-
-# ジェスチャー番号表示用ウィンドウ
-cv2.namedWindow('gesture_number', cv2.WINDOW_NORMAL)
-
+gesture_label = ['SAKURA', 'CAT', 'TRAIN']
 
 while video_capture.isOpened():
     # カメラ画像取得
     ret, frame = video_capture.read()
+    img = np.zeros((100, 300, 3), dtype=np.uint8)
+
     if ret is False:
         break
     frame_width, frame_height = frame.shape[1], frame.shape[0]
@@ -101,3 +93,50 @@ while video_capture.isOpened():
     # 鏡映しになるよう反転
     frame = cv2.flip(frame, 1)
 
+    # MediaPipeで扱う画像は、OpenCVのBGRの並びではなくRGBのため変換
+    rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # 画像をリードオンリーにしてPose検出処理実施
+    rgb_image.flags.writeable = False
+    pose_results = pose.process(rgb_image)
+    rgb_image.flags.writeable = True
+
+    # 有効なポーズが検出された場合、ポーズを描画
+    if pose_results.pose_landmarks:
+        mp_drawing.draw_landmarks(frame, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+        # ポーズの座標計算
+        shoulder_pos = calc_landmark_list(rgb_image, pose_results.pose_landmarks)[ID_SHOULDER]
+        hand_pos = calc_landmark_list(rgb_image, pose_results.pose_landmarks)[ID_HAND]
+
+        # 肩と手の位置座標を履歴に追加
+        point_history.append(shoulder_pos)
+        point_history.append(hand_pos)
+
+    if len(point_history) == history_length:
+        temp_point_history = pre_process_point_history(rgb_image, point_history)
+
+        interpreter.set_tensor(
+            input_details[0]['index'],
+            np.array([temp_point_history]).astype(np.float32))
+        interpreter.invoke()
+        tflite_results = interpreter.get_tensor(output_details[0]['index'])
+
+        gesture_id = np.argmax(np.squeeze(tflite_results))
+
+        # ディスプレイ表示
+        cv2.putText(img, gesture_label[gesture_id], (100, 300),
+                    cv2.FONT_HERSHEY_PLAIN, 20, (0, 255, 255), 5, cv2.LINE_AA)
+        frame = draw_point_history(frame, point_history)
+        cv2.imshow('full_body_detection', frame)
+        cv2.imshow('img', img)
+
+    # キー入力(ESC:プログラム終了)
+    key = cv2.waitKey(1)
+    if key == 27:  # ESC
+        break
+
+# リソースの解放
+video_capture.release()
+pose.close()
+cv2.destroyAllWindows()
