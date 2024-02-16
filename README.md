@@ -9,22 +9,21 @@ pip install -r ./env/requirements.txt
 
 ### mediapipe動作test
 ```shell
-cd src
-python3 hands_test.py
+python3 src/body/body_test.py
 ```
 
 ### データセット作成（作成済みモデルの場合は不要）
 ```shell
-python3 hands_train.py --gesture_id=1 --time=10
+python3 src/body/body_train.py --gesture_id=1 --time=10
 #0は静止,1はパーで手を振る,2はグーで手を振る
 ```
 
 ### 作成したデータセットを用いた学習（作成済みモデルの場合は不要）
 ```shell
-python3 hands_lern.py
+python3 src/body/body_lern.py
 ```
 
 ### モーション検知本体
 ```shell
-python3 hands_main.py
+python3 src/body/body_main.py
 ```
