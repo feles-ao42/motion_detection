@@ -1,6 +1,7 @@
 import csv
 import time
 import argparse
+import itertools
 from collections import deque
 
 import cv2
@@ -8,8 +9,8 @@ import mediapipe as mp
 
 # コマンドライン引数取得
 parser = argparse.ArgumentParser()
-parser.add_argument("--time", type=int, default=10)
 parser.add_argument("--gesture_id", type=int, default=0)
+parser.add_argument("--time", type=int, default=10)
 args = parser.parse_args()
 
 
@@ -30,7 +31,8 @@ def calc_landmark_list(image, landmarks):
 def draw_point_history(image, point_history):
     for index, point in enumerate(point_history):
         if point[0] != 0 and point[1] != 0:
-            cv2.circle(image, (point[0], point[1]), 1 + int(index / 2), (255, 0, 0), 2)
+            cv2.circle(image, (point[0], point[1]), 1 + int(index / 2),
+                       (255, 0, 0), 2)
     return image
 
 
@@ -48,25 +50,26 @@ video_capture = cv2.VideoCapture(camera_no)
 video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-# MediaPipe Pose初期化
-mp_pose = mp.solutions.pose
+# MediaPipe Hands初期化
+mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
-pose = mp_pose.Pose(
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5
+hands = mp_hands.Hands(
+    max_num_hands=1,  # 最大手検出数：1
+    min_detection_confidence=0.5,  # 検出信頼度閾値：0.5
+    min_tracking_confidence=0.5  # トラッキング信頼度閾値：0.5
 )
 
-# トラック対象の設定 (肩と手)
-ID_SHOULDER = 11  # 右肩
-ID_HAND = 20  # 右手首
+# トラック対象の設定(https://developers.google.com/mediapipe/solutions/vision/hand_landmarker)参照
+ID_FINGER_TIP = 9
+ID_FINGER_TIP_2 = 12
 
-# 座標履歴を保持するための変数
+# 指先の座標履歴を保持するための変数
 history_length = 16
 point_history = deque(maxlen=history_length)
 
 # CSVファイル保存先
-csv_path = './data/body_point_history.csv'
+csv_path = '../data/point_history.csv'
 
 start_time = time.time()
 while video_capture.isOpened():
@@ -82,30 +85,31 @@ while video_capture.isOpened():
     # MediaPipeで扱う画像は、OpenCVのBGRの並びではなくRGBのため変換
     rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    # 画像をリードオンリーにしてPose検出処理実施
+    # 画像をリードオンリーにしてHands検出処理実施
     rgb_image.flags.writeable = False
-    pose_results = pose.process(rgb_image)
+    hands_results = hands.process(rgb_image)
     rgb_image.flags.writeable = True
 
-    # 有効なポーズが検出された場合、ポーズを描画
-    if pose_results.pose_landmarks:
-        mp_drawing.draw_landmarks(frame, pose_results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+    # 有効なランドマークが検出された場合、ランドマークを描画
+    if hands_results.multi_hand_landmarks:
+        for hand_landmarks in hands_results.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(frame, hand_landmarks,
+                                      mp_hands.HAND_CONNECTIONS)
 
-        # ポーズの座標計算
-        shoulder_pos = calc_landmark_list(rgb_image, pose_results.pose_landmarks)[ID_SHOULDER]
-        hand_pos = calc_landmark_list(rgb_image, pose_results.pose_landmarks)[ID_HAND]
-
-        # 肩と手の位置座標を履歴に追加
-        point_history.append(shoulder_pos)
-        point_history.append(hand_pos)
+            # ランドマーク座標の計算
+            landmark_list = calc_landmark_list(rgb_image, hand_landmarks)
+            # 指の指先座標を履歴に追加
+            point_history.append(landmark_list[ID_FINGER_TIP])
+            point_history.append(landmark_list[ID_FINGER_TIP_2])
 
     if len(point_history) == history_length:
-        point_history_list = [item for sublist in point_history for item in sublist]
-        logging_csv(args.gesture_id, csv_path, frame_width, frame_height, point_history_list)
+        point_history_list = list(itertools.chain.from_iterable(point_history))
+        logging_csv(args.gesture_id, csv_path, frame_width, frame_height,
+                    point_history_list)
 
     # ディスプレイ表示
     frame = draw_point_history(frame, point_history)
-    cv2.imshow('full_body_detection', frame)
+    cv2.imshow('chapter03', frame)
 
     # キー入力(ESC:プログラム終了)
     key = cv2.waitKey(1)
@@ -117,5 +121,5 @@ while video_capture.isOpened():
 
 # リソースの解放
 video_capture.release()
-pose.close()
+hands.close()
 cv2.destroyAllWindows()

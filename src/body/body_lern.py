@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 
 
 dataset = './data/body_point_history.csv'
-model_save_path = './data/gesture_classifier.hdf5'
+model_save_path = '../data/gesture_classifier.hdf5'
 
 
 TIME_STEPS = 16
