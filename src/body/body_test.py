@@ -3,6 +3,7 @@ import cv2
 import mediapipe as mp
 from collections import deque
 
+
 # ポーズの画像上の位置を算出する関数
 def calc_pose_landmarks(image, landmarks):
     landmark_point = []
@@ -15,6 +16,7 @@ def calc_pose_landmarks(image, landmarks):
 
     return landmark_point
 
+
 # 座標履歴を描画する関数
 def draw_point_history(image, point_history):
     for index, point in enumerate(point_history):
@@ -22,6 +24,7 @@ def draw_point_history(image, point_history):
             cv2.circle(image, (point[0], point[1]), 1 + int(index / 2),
                        (255, 0, 0), 2)
     return image
+
 
 # カメラキャプチャ設定
 camera_no = 0
@@ -40,7 +43,6 @@ pose = mp_pose.Pose(
 # トラック対象の設定
 ID_SHOULDER = 12  # 左肩
 ID_HAND = 20  # 左手首
-
 
 # 体の部位の座標履歴を保持するための変数
 history_length = 16

@@ -33,7 +33,6 @@ video_capture = cv2.VideoCapture(camera_no)
 video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-
 # MediaPipe Hands初期化
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils

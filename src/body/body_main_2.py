@@ -8,6 +8,7 @@ import numpy as np
 import mediapipe as mp
 import tensorflow as tf
 
+
 # ランドマークの画像上の位置を算出する関数
 def calc_landmark_list(image, landmarks):
     landmark_point = []
@@ -20,12 +21,14 @@ def calc_landmark_list(image, landmarks):
 
     return landmark_point
 
+
 # 座標履歴を描画する関数
 def draw_point_history(image, point_history):
     for index, point in enumerate(point_history):
         if point[0] != 0 and point[1] != 0:
             cv2.circle(image, (point[0], point[1]), 1 + int(index / 2), (255, 0, 0), 2)
     return image
+
 
 def pre_process_point_history(image, point_history):
     image_width, image_height = image.shape[1], image.shape[0]
@@ -48,6 +51,7 @@ def pre_process_point_history(image, point_history):
 
     return temp_point_history
 
+
 # カメラキャプチャ設定
 camera_no = 0
 video_capture = cv2.VideoCapture(camera_no)
@@ -66,7 +70,6 @@ pose = mp_pose.Pose(
 # トラック対象の設定 (肩と手)
 ID_SHOULDER = 12  # 左肩
 ID_HAND = 20  # 左手首
-
 
 # 座標履歴を保持するための変数
 history_length = 16

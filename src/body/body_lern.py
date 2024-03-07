@@ -5,17 +5,15 @@ import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
-
 dataset = './data/point_history.csv'
 model_save_path = './data/gesture_classifier.hdf5'
-
 
 TIME_STEPS = 16
 DIMENSION = 2
 NUM_CLASSES = 3
 
-
-X_dataset = np.loadtxt(dataset, delimiter=',', dtype='float32', usecols=list(range(1, (TIME_STEPS * DIMENSION) + 1 + 2)))
+X_dataset = np.loadtxt(dataset, delimiter=',', dtype='float32',
+                       usecols=list(range(1, (TIME_STEPS * DIMENSION) + 1 + 2)))
 y_dataset = np.loadtxt(dataset, delimiter=',', dtype='int32', usecols=(0))
 
 for dataset_index, X_data in enumerate(X_dataset):
@@ -38,7 +36,7 @@ X_train, X_test, y_train, y_test = train_test_split(X_dataset, y_dataset, train_
 input_size = (TIME_STEPS * DIMENSION) - 2
 
 model = tf.keras.models.Sequential([
-    tf.keras.layers.InputLayer(input_shape=(input_size, )),
+    tf.keras.layers.InputLayer(input_shape=(input_size,)),
     tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(24, activation='relu'),
     tf.keras.layers.Dropout(0.5),
@@ -55,13 +53,11 @@ model.compile(
     metrics=['accuracy']
 )
 
-
 # モデルチェックポイントのコールバック
 cp_callback = tf.keras.callbacks.ModelCheckpoint(
     model_save_path, verbose=1, save_weights_only=False)
 # 早期打ち切り用コールバック
 es_callback = tf.keras.callbacks.EarlyStopping(patience=20, verbose=1)
-
 
 model.fit(
     X_train,
@@ -72,16 +68,13 @@ model.fit(
     callbacks=[cp_callback, es_callback]
 )
 
-
 # 推論テスト
 predict_result = model.predict(np.array([X_test[0]]))
 print(np.squeeze(predict_result))
 print(np.argmax(np.squeeze(predict_result)))
 
-
 # 推論専用のモデルとして保存
 model.save(model_save_path, include_optimizer=False)
-
 
 model = tf.keras.models.load_model(model_save_path)
 tflite_save_path = './data/gesture_classifier.tflite'
