@@ -79,12 +79,12 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-gesture_label = ['NORMAL', 'DOUZO', 'OTHER']
+gesture_label = ['None', 'After you.', 'None2']
 
 while video_capture.isOpened():
     # カメラ画像取得
     ret, frame = video_capture.read()
-    img = np.zeros((300, 1200, 3), dtype=np.uint8)
+    img = np.zeros((300, 2000, 3), dtype=np.uint8)
 
     if ret is False:
         break
