@@ -38,8 +38,9 @@ pose = mp_pose.Pose(
 )
 
 # トラック対象の設定
-ID_SHOULDER = 11  # 右肩
-ID_HAND = 20  # 右手首
+ID_SHOULDER = 12  # 左肩
+ID_HAND = 20  # 左手首
+
 
 # 体の部位の座標履歴を保持するための変数
 history_length = 16

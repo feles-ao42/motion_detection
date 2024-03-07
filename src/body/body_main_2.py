@@ -64,8 +64,9 @@ pose = mp_pose.Pose(
 )
 
 # トラック対象の設定 (肩と手)
-ID_SHOULDER = 11  # 右肩
-ID_HAND = 20  # 右手首
+ID_SHOULDER = 12  # 左肩
+ID_HAND = 20  # 左手首
+
 
 # 座標履歴を保持するための変数
 history_length = 16
@@ -79,7 +80,7 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-gesture_label = ['None', 'After you.', 'None2']
+gesture_label = ['', 'After you.', '']
 
 while video_capture.isOpened():
     # カメラ画像取得
